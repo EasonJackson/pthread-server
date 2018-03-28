@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		6FDBA21C2059D9B00065B65D /* OnlineChatServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OnlineChatServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FDBA21F2059D9B00065B65D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		6FF40C1A206C54F50059EE3B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +42,7 @@
 		6FDBA2132059D9B00065B65D = {
 			isa = PBXGroup;
 			children = (
+				6FF40C1A206C54F50059EE3B /* README.md */,
 				6FDBA21E2059D9B00065B65D /* OnlineChatServer */,
 				6FDBA21D2059D9B00065B65D /* Products */,
 			);

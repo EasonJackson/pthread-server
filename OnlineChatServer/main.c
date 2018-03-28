@@ -9,44 +9,42 @@
 # include <stdio.h>
 # include <pthread.h>
 # include <netdb.h>
+# include <arpa/inet.h>
+# include <ctype.h>
+# include <netdb.h>
+# include <netinet/in.h>
+# include <stdlib.h>
+# include <string.h>
+# include <sys/socket.h>
+# include <unistd.h>
 
 # define SERVER_ADDRESS "localhost"
 # define SERVER_PORT 8080
-# define NUMBER_OF_THREADS 2
-# define max_pending_connections 2
+# define max_pending_connections 1
 
-void* read_from_client() {
-    return NULL;
-}
+static const size_t BUFFER_SIZE = 1024;
 
-void* write_to_client() {
-    return NULL;
-}
+void* read_from_client(char[], int*, int*);
+
+void* write_to_client(char[], int*, int*);
 
 int main(int argc, const char * argv[]) {
-    
-    char sendmessage[256];
-    char recvmessage[256];
-    pthread_t thread_pool[NUMBER_OF_THREADS];
-    int thread_arg[NUMBER_OF_THREADS];
-    int result;
+    char sendmessage[BUFFER_SIZE];
+    char recvmessage[BUFFER_SIZE];
+    pthread_t read_thread, write_thread;
     int server_socket_fd = 0, client_socket_fd = 0;
-    int set_reuse_addr = 1;
-    
-    // Read thread
-    thread_arg[0] = 0;
-    result = pthread_create(&thread_pool[0], NULL, read_from_client, &thread_arg[0]);
-    // Write thread
-    thread_arg[1] = 1;
-    result = pthread_create(&thread_pool[1], NULL, write_to_client, &thread_arg[1]);
+    int set_reuse_addr = 1; // set reuse address ON = 1
+    socklen_t client_addr_len;
     
     // Struct type to hold ip address and port
     struct sockaddr_in server_address;
     struct sockaddr_in client_address;
     
-    
     // 1.SOCKET CREATION
     // Create a socket with AF_INET(ip addressing) and of type SOCT_STREAM
+    // AF_INET: IPv4
+    // SOCT_STREAM: stream-based
+    // 0: protocal likely set to TCP
     // Data from all devices wishing to connect to this socket will be redirected to listen_fd
     if (0 > (server_socket_fd = socket(AF_INET, SOCK_STREAM, 0))) {
         fprintf(stderr, "Failed to create listening socket\n");
@@ -59,6 +57,7 @@ int main(int argc, const char * argv[]) {
     }
     // Clear address
     bzero(&server_address, sizeof(server_address));
+    bzero(&client_address, sizeof(client_address));
     // Set Addressing scheme to – AF_INET ( IP )
     // Allow any IP to connect – htons(INADDR_ANY)
     // Listen on port 22000 – htons(22000)
@@ -76,21 +75,82 @@ int main(int argc, const char * argv[]) {
     // 4. LISTEN
     // Listen on the connections, with a connections limit of 1
     if (0 > listen(server_socket_fd, max_pending_connections)) {
-        
+        fprintf(stderr, "Listening on socket error");
+        exit(1);
+    } else {
+        fprintf(stdout, "server listening for a connection on port %d\n", SERVER_PORT);
     }
+    
+    // Get the size client's address structure
+    client_addr_len = sizeof(client_address);
     
     // 5. ACCEPT
-    if (0 > (client_socket_fd = accept(server_socket_fd, (struct sockaddr*) NULL, NULL))) {
-        fprintf(stderr, "Server accepting failed");
+    if (0 > (client_socket_fd = accept(server_socket_fd, (struct sockaddr*) &client_address, &client_addr_len))) {
+        fprintf(stderr, "Server accepting failed.");
+    } else {
+        fprintf(stdout, "Server accepted a client.");
     }
     
-    while(1)
-    {
-        bzero(sendmessage, 256);
-        bzero(recvmessage, 256);
-        
+    // Create read thread
+    if (pthread_create(&read_thread, NULL, read_from_client(recvmessage,
+                                                            &server_socket_fd,
+                                                            &client_socket_fd), NULL) != 0) {
+        fprintf(stderr, "Failed to create read thread");
+        exit(1);
     }
+    // Create write thread
+    if (pthread_create(&write_thread, NULL, write_to_client(sendmessage,
+                                                            &server_socket_fd,
+                                                            &client_socket_fd), NULL) != 0) {
+        fprintf(stderr, "Failed to create write thread");
+        exit(1);
+    }
+    
+    pthread_join(read_thread, NULL);
+    pthread_join(write_thread, NULL);
     
     close(server_socket_fd);
+    close(client_socket_fd);
     return 0;
+}
+
+// Definition of read_from_client function
+void* read_from_client(char recvmessage[BUFFER_SIZE],
+                       int* server_socket_fd_p,
+                       int* client_socket_fd_p) {
+    
+    while(1) {
+        // Clear the reader buffer
+        bzero(recvmessage, BUFFER_SIZE);
+        
+        // Read info from client socket
+        ssize_t num_bytes = read(*client_socket_fd_p, recvmessage, BUFFER_SIZE);
+        
+        // Output error if there is an error;
+        // Output client address + message in the buffer.
+        if (num_bytes == 0) {
+            fprintf(stderr, "Server cannot read from client");
+        } else {
+            fprintf(stdout, "Message from client %d: %s", *client_socket_fd_p, recvmessage);
+        }
+    }
+    
+    return NULL;
+}
+
+// Definition of write_to_client function
+void* write_to_client(char sendmessage[BUFFER_SIZE],
+                      int* server_socket_fd_p,
+                      int* client_socket_fd_p) {
+    while (1) {
+        // Clear the sender buffer
+        bzero(sendmessage, BUFFER_SIZE);
+        
+        // Read line from stdin stream
+        fgets(sendmessage, BUFFER_SIZE, stdin);
+        if (0 > write(*client_socket_fd_p, sendmessage, BUFFER_SIZE)) {
+            fprintf(stderr, "Server cannot send message to client");
+        }
+    }
+    return NULL;
 }
