@@ -22,5 +22,9 @@ Run the executable ```ChatServer```, which runs on ```localhost:8080```
 
 ### Running Client Program
 
+### Communitating between Server and Client
+
+Both server and client use two different posix threads, one for read message task and the other for write message task.
+
 ## Author
-* **EasonJackson - @2018***
+* **EasonJackson - @2018**
