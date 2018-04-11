@@ -156,10 +156,13 @@ void* write_to_client(char sendmessage[BUFFER_SIZE],
         
         // Read line from stdin stream
         fgets(sendmessage, BUFFER_SIZE, stdin);
-        fprintf(stdout, "Read message from input");
+        
         if (0 > write(*client_socket_fd_p, sendmessage, BUFFER_SIZE)) {
             fprintf(stderr, "Server cannot send message to client");
         }
+        
+        
+        bzero(sendmessage, BUFFER_SIZE);
     }
     return NULL;
 }
