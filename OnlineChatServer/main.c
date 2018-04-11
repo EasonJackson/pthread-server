@@ -49,6 +49,8 @@ int main(int argc, const char * argv[]) {
     if (0 > (server_socket_fd = socket(AF_INET, SOCK_STREAM, 0))) {
         fprintf(stderr, "Failed to create listening socket\n");
         exit(1);
+    } else {
+        fprintf(stdout, "Server socket created...\n");
     }
     
     // 2. SET SOCKET OPTIONS
@@ -70,6 +72,8 @@ int main(int argc, const char * argv[]) {
     if (0 > (bind(server_socket_fd, (struct sockaddr *) &server_address, sizeof(server_address)))) {
         fprintf(stderr, "Fail to bind socket\n");
         exit(1);
+    } else {
+        fprintf(stdout, "Bind socket...\n");
     }
     
     // 4. LISTEN
@@ -86,24 +90,28 @@ int main(int argc, const char * argv[]) {
     
     // 5. ACCEPT
     if (0 > (client_socket_fd = accept(server_socket_fd, (struct sockaddr*) &client_address, &client_addr_len))) {
-        fprintf(stderr, "Server accepting failed.");
+        fprintf(stderr, "Server accepting failed.\n");
     } else {
-        fprintf(stdout, "Server accepted a client.");
+        fprintf(stdout, "Server accepted a client.\n");
     }
     
     // Create read thread
     if (pthread_create(&read_thread, NULL, read_from_client(recvmessage,
                                                             &server_socket_fd,
                                                             &client_socket_fd), NULL) != 0) {
-        fprintf(stderr, "Failed to create read thread");
+        fprintf(stderr, "Failed to create read thread\n");
         exit(1);
+    } else {
+        fprintf(stdout, "Created read thread...\n");
     }
     // Create write thread
     if (pthread_create(&write_thread, NULL, write_to_client(sendmessage,
                                                             &server_socket_fd,
                                                             &client_socket_fd), NULL) != 0) {
-        fprintf(stderr, "Failed to create write thread");
+        fprintf(stderr, "Failed to create write thread\n");
         exit(1);
+    } else {
+        fprintf(stdout, "Created write thread...\n");
     }
     
     pthread_join(read_thread, NULL);
@@ -148,6 +156,7 @@ void* write_to_client(char sendmessage[BUFFER_SIZE],
         
         // Read line from stdin stream
         fgets(sendmessage, BUFFER_SIZE, stdin);
+        fprintf(stdout, "Read message from input");
         if (0 > write(*client_socket_fd_p, sendmessage, BUFFER_SIZE)) {
             fprintf(stderr, "Server cannot send message to client");
         }
