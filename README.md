@@ -20,6 +20,14 @@ gcc -o ChatServer main.c
 
 Run the executable ```ChatServer```, which runs on ```localhost:8080```
 
+```
+Server socket created...
+Type: IPv4
+Stream-based socket
+Bind socket successfully...
+Server listening for a connection on port 8080
+```
+
 ### Running Client Program
 
 ### Communitating between Server and Client
