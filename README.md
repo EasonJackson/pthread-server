@@ -30,6 +30,20 @@ Server listening for a connection on port 8080
 
 ### Running Client Program
 
+
+Under dir ```/OnlineChatClient```
+
+```
+gcc -o ChatClient main.c
+```
+
+### C Socket
+1. Socket Creation
+2. Configuration
+3. Binding
+4. Listening on Port
+5. Accept a Connection
+
 ### Communitating between Server and Client
 
 Both server and client use two different posix threads, one for read message task and the other for write message task.
