@@ -42,12 +42,11 @@ gcc -o ChatClient main.c
     Create an IPv4 socket, ```server_socket_fd = socket(AF_INET, SOCK_STREAM, 0)```
     
     With clarifications on the parameter:
-    
-    AF_INET: IPv4
-    
-    SOCT_STREAM: stream-based
-    
-    0: protocal likely set to TCP
+    |   PARAMS          |   REPRESENTING |
+    |----------------      | :--------------------: |
+    |   AF_INET             | IPv4                        |
+    | SOCT_STEAM    | stream-based          |
+    |0                      | protocal likely set to TCP|
     
 2. Configuration
 3. Binding
