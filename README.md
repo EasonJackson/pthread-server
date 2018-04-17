@@ -78,7 +78,10 @@ gcc -o ChatClient main.c
     ```bind(socket_fd, (struct sockaddr *) &server_address, sizeof(server_address))```
 
 4. Listening on Port
-
+    
+    Let the file descriptor listen on the connections to the binded socket. ```max_pending_connections``` determines how many connections can be listened. When the number of connections is larger than max pending connection, create a new connection will result in failure.
+    
+    ```listen(socket_fd, max_pending_connections)```
     
 
 5. Accept a Connection
