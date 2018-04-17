@@ -39,7 +39,8 @@ gcc -o ChatClient main.c
 
 ### C Socket
 1. Socket Creation
-    Create an IPv4 socket and return a file descriptor, ```int socket_fd = socket(AF_INET, SOCK_STREAM, 0)```
+    Create an IPv4 socket and return a file descriptor, 
+    ```int socket_fd = socket(AF_INET, SOCK_STREAM, 0)```
     
     With clarifications on the parameter:
     
@@ -70,7 +71,15 @@ gcc -o ChatClient main.c
     ```
     
 3. Binding
+    
+    Bind the file descriptor from server side to the server's address.
+    
+    ```bind(socket_fd, (struct sockaddr *) &server_address, sizeof(server_address))```
+
 4. Listening on Port
+
+    
+
 5. Accept a Connection
 
 ### Communitating between Server and Client
