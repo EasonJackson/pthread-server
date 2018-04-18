@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6FDBA2202059D9B00065B65D /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 6FDBA21F2059D9B00065B65D /* main.c */; };
+		6FDBA2202059D9B00065B65D /* server.c in Sources */ = {isa = PBXBuildFile; fileRef = 6FDBA21F2059D9B00065B65D /* server.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +24,7 @@
 
 /* Begin PBXFileReference section */
 		6FDBA21C2059D9B00065B65D /* OnlineChatServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OnlineChatServer; sourceTree = BUILT_PRODUCTS_DIR; };
-		6FDBA21F2059D9B00065B65D /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		6FDBA21F2059D9B00065B65D /* server.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = server.c; sourceTree = "<group>"; };
 		6FF40C1A206C54F50059EE3B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -59,7 +59,7 @@
 		6FDBA21E2059D9B00065B65D /* OnlineChatServer */ = {
 			isa = PBXGroup;
 			children = (
-				6FDBA21F2059D9B00065B65D /* main.c */,
+				6FDBA21F2059D9B00065B65D /* server.c */,
 			);
 			path = OnlineChatServer;
 			sourceTree = "<group>";
@@ -121,7 +121,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6FDBA2202059D9B00065B65D /* main.c in Sources */,
+				6FDBA2202059D9B00065B65D /* server.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
