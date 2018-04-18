@@ -85,6 +85,10 @@ gcc -o ChatClient main.c
     
 
 5. Accept a Connection
+    
+    Accept a client socket and return a file descriptor associated with the socket.
+
+    ```client_socket_fd = accept(server_socket_fd, (struct sockaddr*) &client_address, &client_addr_len)```
 
 ### Communitating between Server and Client
 
