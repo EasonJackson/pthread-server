@@ -1,5 +1,5 @@
 //
-//  main.c
+//  server.c
 //  OnlineChatServer
 //
 //  Created by EasonJackson on 3/14/18.
@@ -22,15 +22,22 @@
 # define SERVER_PORT 8080
 # define max_pending_connections 2
 
+// Send and receive message buffer
+// Buffer size = 1024 char
 static const size_t BUFFER_SIZE = 1024;
+static char sendmessage[BUFFER_SIZE];
+static char recvmessage[BUFFER_SIZE];
 
+pthread_mutex_t gSharedMemoryLock = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t gReadPhase = PTHREAD_COND_INITIALIZER;
+pthread_cond_t gWritePhase = PTHREAD_COND_INITIALIZER;
+
+// Read and write func declearations
 void* read_from_client(char[], int*, int*);
-
 void* write_to_client(char[], int*, int*);
 
-int main(int argc, const char * argv[]) {
-    char sendmessage[BUFFER_SIZE];
-    char recvmessage[BUFFER_SIZE];
+
+int serve(int argc, const char * argv[]) {
     pthread_t read_thread, write_thread;
     
     int server_socket_fd = 0, client_socket_fd = 0;
@@ -115,31 +122,28 @@ int main(int argc, const char * argv[]) {
     while (1) {
         bzero(recvmessage, BUFFER_SIZE);
         read(client_socket_fd, recvmessage, BUFFER_SIZE);
-        
         printf("Echoing back - %s", recvmessage);
-        
         write(client_socket_fd, recvmessage, BUFFER_SIZE);
     }
-//    // Create read thread
-//    if (pthread_create(&read_thread, NULL, read_from_client(recvmessage,
-//                                                            &server_socket_fd,
-//                                                            &client_socket_fd), NULL) != 0) {
-//        fprintf(stderr, "Failed to create read thread\n");
-//        exit(1);
-//    }
-//
-//    // Create write thread
-//    if (pthread_create(&write_thread, NULL, write_to_client(sendmessage,
-//                                                            &server_socket_fd,
-//                                                            &client_socket_fd), NULL) != 0) {
-//        fprintf(stderr, "Failed to create write thread\n");
-//        exit(1);
-//    }
-//
-//    pthread_join(read_thread, NULL);
-//    pthread_join(write_thread, NULL);
+    //    // Create read thread
+    //    if (pthread_create(&read_thread, NULL, read_from_client(recvmessage,
+    //                                                            &server_socket_fd,
+    //                                                            &client_socket_fd), NULL) != 0) {
+    //        fprintf(stderr, "Failed to create read thread\n");
+    //        exit(1);
+    //    }
+    //
+    //    // Create write thread
+    //    if (pthread_create(&write_thread, NULL, write_to_client(sendmessage,
+    //                                                            &server_socket_fd,
+    //                                                            &client_socket_fd), NULL) != 0) {
+    //        fprintf(stderr, "Failed to create write thread\n");
+    //        exit(1);
+    //    }
+    //
+    //    pthread_join(read_thread, NULL);
+    //    pthread_join(write_thread, NULL);
     
-    close(server_socket_fd);
     return 0;
 }
 
@@ -176,19 +180,19 @@ void* write_to_client(char sendmessage[BUFFER_SIZE],
                       int* client_socket_fd_p) {
     fprintf(stdout, "Created write thread...\n");
     
-//    while (1) {
-//        // Clear the sender buffer
-//        bzero(sendmessage, BUFFER_SIZE);
-//
-//        // Read line from stdin stream
-//        fgets(sendmessage, BUFFER_SIZE, stdin);
-//
-//        if (0 > write(*client_socket_fd_p, sendmessage, BUFFER_SIZE)) {
-//            fprintf(stderr, "Server cannot send message to client");
-//        }
-//
-//
-//        bzero(sendmessage, BUFFER_SIZE);
-//    }
+    //    while (1) {
+    //        // Clear the sender buffer
+    //        bzero(sendmessage, BUFFER_SIZE);
+    //
+    //        // Read line from stdin stream
+    //        fgets(sendmessage, BUFFER_SIZE, stdin);
+    //
+    //        if (0 > write(*client_socket_fd_p, sendmessage, BUFFER_SIZE)) {
+    //            fprintf(stderr, "Server cannot send message to client");
+    //        }
+    //
+    //
+    //        bzero(sendmessage, BUFFER_SIZE);
+    //    }
     return NULL;
 }
