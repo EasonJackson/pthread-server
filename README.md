@@ -38,6 +38,7 @@ gcc -o ChatClient main.c
 ```
 
 ### C Socket
+
 1. Socket Creation
     Create an IPv4 socket and return a file descriptor, 
     
@@ -92,7 +93,9 @@ gcc -o ChatClient main.c
 
 ### Communitating between Server and Client
 
-Both server and client use two different posix threads, one for read message task and the other for write message task.
+1. An echo method of testing the connection between server and client.
+
+    The client end reads a line of input string at each time and send it to server. The server will listen on the incoming message, output an handling message on it own console, and then responds the same message back to the client.
 
 ## Author
 * **EasonJackson - @2018**
