@@ -30,15 +30,12 @@ static char recvmessage[BUFFER_SIZE];
 
 pthread_mutex_t gSharedMemoryLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t gReadPhase = PTHREAD_COND_INITIALIZER;
-pthread_cond_t gWritePhase = PTHREAD_COND_INITIALIZER;
 
-// Read and write func declearations
-void* read_from_client(char[], int*, int*);
-void* write_to_client(char[], int*, int*);
-
+// Thread handler func declearations
+void* handle_client(void*);
 
 int serve(int argc, const char * argv[]) {
-    pthread_t read_thread, write_thread;
+    pthread_t thread;
     
     int server_socket_fd = 0, client_socket_fd = 0;
     int set_reuse_addr = 1; // set reuse address ON = 1
@@ -119,36 +116,25 @@ int serve(int argc, const char * argv[]) {
     }
     fprintf(stdout, "Server established connection with %s (%s)\n", client_host_info->h_name, client_host_ip);
     
-    while (1) {
-        bzero(recvmessage, BUFFER_SIZE);
-        read(client_socket_fd, recvmessage, BUFFER_SIZE);
-        printf("Echoing back - %s", recvmessage);
-        write(client_socket_fd, recvmessage, BUFFER_SIZE);
+//    while (1) {
+//        bzero(recvmessage, BUFFER_SIZE);
+//        read(client_socket_fd, recvmessage, BUFFER_SIZE);
+//        printf("Echoing back - %s", recvmessage);
+//        write(client_socket_fd, recvmessage, BUFFER_SIZE);
+//    }
+    // Create thread
+    if (pthread_create(&thread, NULL, handle_client, (void*) &client_socket_fd) != 0) {
+        fprintf(stderr, "Failed to create thread\n");
+        exit(1);
     }
-    //    // Create read thread
-    //    if (pthread_create(&read_thread, NULL, read_from_client(recvmessage,
-    //                                                            &server_socket_fd,
-    //                                                            &client_socket_fd), NULL) != 0) {
-    //        fprintf(stderr, "Failed to create read thread\n");
-    //        exit(1);
-    //    }
-    //
-    //    // Create write thread
-    //    if (pthread_create(&write_thread, NULL, write_to_client(sendmessage,
-    //                                                            &server_socket_fd,
-    //                                                            &client_socket_fd), NULL) != 0) {
-    //        fprintf(stderr, "Failed to create write thread\n");
-    //        exit(1);
-    //    }
-    //
-    //    pthread_join(read_thread, NULL);
-    //    pthread_join(write_thread, NULL);
+
+    pthread_join(thread, NULL);
     
     return 0;
 }
 
-// Definition of read_from_client function
-void* read_from_client(char recvmessage[BUFFER_SIZE],
+// Definition of handle_client function
+void* handle_client(char recvmessage[BUFFER_SIZE],
                        int* server_socket_fd_p,
                        int* client_socket_fd_p) {
     fprintf(stdout, "Created read thread...\n");
@@ -171,28 +157,5 @@ void* read_from_client(char recvmessage[BUFFER_SIZE],
         }
     }
     
-    return NULL;
-}
-
-// Definition of write_to_client function
-void* write_to_client(char sendmessage[BUFFER_SIZE],
-                      int* server_socket_fd_p,
-                      int* client_socket_fd_p) {
-    fprintf(stdout, "Created write thread...\n");
-    
-    //    while (1) {
-    //        // Clear the sender buffer
-    //        bzero(sendmessage, BUFFER_SIZE);
-    //
-    //        // Read line from stdin stream
-    //        fgets(sendmessage, BUFFER_SIZE, stdin);
-    //
-    //        if (0 > write(*client_socket_fd_p, sendmessage, BUFFER_SIZE)) {
-    //            fprintf(stderr, "Server cannot send message to client");
-    //        }
-    //
-    //
-    //        bzero(sendmessage, BUFFER_SIZE);
-    //    }
     return NULL;
 }
