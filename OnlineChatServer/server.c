@@ -86,7 +86,7 @@ int serve(int argc, const char * argv[]) {
     }
     
     // 4. LISTEN
-    // Listen on the connections, with a connections limit of 1
+    // Listen on the connections
     if (0 > listen(server_socket_fd, max_pending_connections)) {
         fprintf(stderr, "Listening on socket error");
         exit(1);
@@ -98,34 +98,29 @@ int serve(int argc, const char * argv[]) {
     client_addr_len = sizeof(client_address);
     
     // 5. ACCEPT
-    if (0 > (client_socket_fd = accept(server_socket_fd, (struct sockaddr*) &client_address, &client_addr_len))) {
-        fprintf(stderr, "Server accepting failed.\n");
-    } else {
-        fprintf(stdout, "Server accepted a client.\n");
-    }
-    
-    client_host_info = gethostbyaddr((const char*)&client_address.sin_addr.s_addr,
-                                     sizeof(client_address.sin_addr.s_addr),
-                                     AF_INET);
-    if (client_host_info == NULL) {
-        fprintf(stderr, "Server could not determine client host address\n");
-    }
-    client_host_ip = inet_ntoa(client_address.sin_addr);
-    if (client_host_ip == NULL) {
-        fprintf(stderr, "Server could not determine client host ip\n");
-    }
-    fprintf(stdout, "Server established connection with %s (%s)\n", client_host_info->h_name, client_host_ip);
-    
-//    while (1) {
-//        bzero(recvmessage, BUFFER_SIZE);
-//        read(client_socket_fd, recvmessage, BUFFER_SIZE);
-//        printf("Echoing back - %s", recvmessage);
-//        write(client_socket_fd, recvmessage, BUFFER_SIZE);
-//    }
-    // Create thread
-    if (pthread_create(&thread, NULL, handle_client, (void*) &client_socket_fd) != 0) {
-        fprintf(stderr, "Failed to create thread\n");
-        exit(1);
+    while (1) {
+        if (0 > (client_socket_fd = accept(server_socket_fd, (struct sockaddr*) &client_address, &client_addr_len))) {
+            fprintf(stderr, "Server accepting failed.\n");
+        } else {
+            fprintf(stdout, "Server accepted a client.\n");
+            client_host_info = gethostbyaddr((const char*)&client_address.sin_addr.s_addr,
+                                             sizeof(client_address.sin_addr.s_addr),
+                                             AF_INET);
+            if (client_host_info == NULL) {
+                fprintf(stderr, "Server could not determine client host address\n");
+            }
+            client_host_ip = inet_ntoa(client_address.sin_addr);
+            if (client_host_ip == NULL) {
+                fprintf(stderr, "Server could not determine client host ip\n");
+            }
+            fprintf(stdout, "Server established connection with %s (%s)\n", client_host_info->h_name, client_host_ip);
+            
+            // Create thread
+            if (pthread_create(&thread, NULL, handle_client, (void*) &client_socket_fd) != 0) {
+                fprintf(stderr, "Failed to create thread\n");
+                exit(1);
+            }
+        }
     }
 
     pthread_join(thread, NULL);
@@ -134,10 +129,10 @@ int serve(int argc, const char * argv[]) {
 }
 
 // Definition of handle_client function
-void* handle_client(char recvmessage[BUFFER_SIZE],
-                       int* server_socket_fd_p,
-                       int* client_socket_fd_p) {
-    fprintf(stdout, "Created read thread...\n");
+void* handle_client(void* client_socket_fd) {
+    int* client_socket_fd_p = (int*) client_socket_fd;
+    fprintf(stdout, "Created thread...\n");
+    write(*client_socket_fd_p, "Welcome client.\n", 15);
     
     while(1) {
         // Clear the reader buffer
